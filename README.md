@@ -6,14 +6,19 @@ Initial Goals:
   
   Login using EWS managed API stream method
   
-  On new email do the following
-    1.  Is email from a clients domain?
-      a.  No, forward to distribution group, delete email
-      b.  Yes, Does the email have ticket info in the subject?
-        i.  Yes, update relevant ticket notes, forward email to distribution group, delete email
-        ii.  No, open ticket, forward email to distribution group with modified subject to include ticket, delete email
-      c.  Log activity based on logging level
-  
+  On new email do the following 
+  <OL>
+    <LI>Is email from a clients domain?</LI>
+    <OL>
+      <LI>No, forward to distribution group, delete email</LI>
+      <LI>Yes, Does the email have ticket info in the subject?</LI>
+        <OL>
+          <LI>Yes, update relevant ticket notes, forward email to distribution group, delete email</LI>
+          <LI>No, open ticket, forward email to distribution group with modified subject to include ticket, delete email</LI>
+        </OL>
+      <LI>Log activity based on logging level</LI>
+    </OL>
+  </OL>
   EWS Managed API stream method has max connect time of 30 minutes.  On disconnect immediatly reconnect.
   
   Possibly eventually add option to reply to emails directly through ticket system?
