@@ -20,12 +20,24 @@ namespace TicketFromEmail365
 
         protected override void OnStart(string[] args)
         {
-           // TODO: add startup stuff
+           // TODO: add startup stuff for running as service
         }
 
         protected override void OnStop()
         {
-           // TODO: add shutdown stuff
+           // TODO: add shutdown stuff for running as service
+        }
+
+        public void Start()
+        {
+            // TODO: add startup stuff for running as console for debugging
+            // Delete function when done developing program
+        }
+
+        public void DoStop()
+        {
+            // TODO: add shutdown stuff for running as console for debugging
+            // Delete function when done developing program
         }
     }
 }
