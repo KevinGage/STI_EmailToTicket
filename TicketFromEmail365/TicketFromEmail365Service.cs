@@ -21,6 +21,8 @@ namespace TicketFromEmail365
         protected override void OnStart(string[] args)
         {
            // TODO: add startup stuff for running as service
+            Logger.checkLogFile();
+            Logger.writeSingleLine("Program started in service mode");
         }
 
         protected override void OnStop()
@@ -32,6 +34,8 @@ namespace TicketFromEmail365
         {
             // TODO: add startup stuff for running as console for debugging
             // Delete function when done developing program
+            Logger.checkLogFile();
+            Logger.writeSingleLine("Program started in debugging mode");
         }
 
         public void DoStop()
