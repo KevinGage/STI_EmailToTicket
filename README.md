@@ -1,7 +1,7 @@
 # STI_EmailToTicket
 A C# service created to check an office 365 inbox for messages and auto-open tickets in the STI ticket applicaiton
 
-Initial Goals:
+Initial Goals:<br />
   Read mail server address, username, password, logging level from file. Exclude this file from git!  Have example file in git.
   
   Login using EWS managed API stream method
