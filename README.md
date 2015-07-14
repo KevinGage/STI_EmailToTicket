@@ -11,7 +11,7 @@ Initial Goals:
     <LI>Is email from a clients domain?</LI>
     <OL>
       <LI>No, forward to distribution group, delete email</LI>
-      <LI>Yes, Does the email have ticket info in the subject?</LI>
+      <LI>Yes, Does the email have existing ticket info in the subject?</LI>
         <OL>
           <LI>Yes, update relevant ticket notes, forward email to distribution group, delete email</LI>
           <LI>No, open ticket, forward email to distribution group with modified subject to include ticket, delete email</LI>
