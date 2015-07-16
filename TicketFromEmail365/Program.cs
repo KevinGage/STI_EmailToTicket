@@ -21,6 +21,19 @@ namespace TicketFromEmail365
             {
                 serviceToRun.Start();
 
+                Config conf = new Config(@".\TicketsFromEmail365.cfg");
+
+                if (conf.Error != "")
+                {
+                    Logger.writeSingleLine(conf.Error);
+                    Logger.writeSingleLine("Terminating");
+                    serviceToRun.DoStop();
+                }
+                else
+                {
+                    Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
+                }
+
                 Console.WriteLine("Press Enter to terminate ...");
                 Console.ReadLine();
 

@@ -23,6 +23,19 @@ namespace TicketFromEmail365
            // TODO: add startup stuff for running as service
             Logger.checkLogFile();
             Logger.writeSingleLine("Program started in service mode");
+
+            Config conf = new Config(@".\TicketsFromEmail365.cfg");
+
+            if (conf.Error != "")
+            {
+                Logger.writeSingleLine(conf.Error);
+                Logger.writeSingleLine("Terminating");
+                // do something here to stop service
+            }
+            else
+            {
+                Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
+            }
         }
 
         protected override void OnStop()
