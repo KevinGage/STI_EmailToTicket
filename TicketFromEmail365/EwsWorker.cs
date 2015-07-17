@@ -88,7 +88,7 @@ namespace TicketFromEmail365
             }
         }
 
-        static private void OnEvent(object sender, NotificationEventArgs args) 
+        private static void OnEvent(object sender, NotificationEventArgs args) 
         {
             StreamingSubscription subscription = args.Subscription;
 
@@ -111,6 +111,9 @@ namespace TicketFromEmail365
                     // The NotificationEvent for an e-mail message is an ItemEvent. 
                     ItemEvent itemEvent = (ItemEvent)notification;
                     Logger.writeSingleLine("ItemId: " + itemEvent.ItemId.UniqueId);
+                    
+                    StreamingSubscriptionConnection senderConnection = (StreamingSubscriptionConnection)sender;
+                    Logger.writeSingleLine(GetItemSubject(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
                 }
                 else
                 {
@@ -132,6 +135,30 @@ namespace TicketFromEmail365
             Exception e = args.Exception;
             Logger.writeSingleLine("Error Encountered in EWS Stream");
             Logger.writeSingleLine("Error: " + e.Message);
+        }
+
+        static private string GetItemSubject(ItemId itemId, ExchangeService service)
+        {
+            // Retrieve the subject for a given item
+            string ItemInfo = "";
+            Item singleItem;
+            PropertySet singleItemPropertySet = new PropertySet(ItemSchema.Subject);
+
+            try
+            {
+                singleItem = Item.Bind(service, itemId, singleItemPropertySet);
+            }
+            catch (Exception ex)
+            {
+                return "Error retrieving message subject Error message: " + System.Environment.NewLine + ex.Message + System.Environment.NewLine + " Message ID: " + itemId.ToString();
+            }
+
+            if (!(singleItem is Appointment))
+            {
+                ItemInfo += "Item subject=" + singleItem.Subject;
+            }
+
+            return ItemInfo;
         }
     }
 }
