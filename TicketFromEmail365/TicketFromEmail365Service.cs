@@ -35,6 +35,7 @@ namespace TicketFromEmail365
             else
             {
                 Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
+                EwsWorker worker = new EwsWorker(conf);
             }
         }
 

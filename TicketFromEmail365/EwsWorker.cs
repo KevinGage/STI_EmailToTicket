@@ -23,9 +23,11 @@ namespace TicketFromEmail365
 
             if (_currentConfig.LogLevel > 0)
             {
-                Logger.writeSingleLine("Attempting to login to ");
+                Logger.writeSingleLine("Attempting to login as: " + _currentConfig.User);
             }
             service.AutodiscoverUrl(_currentConfig.User, RedirectionUrlValidationCallback);
+
+            ConnectToStream(service);
         }
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl) // used as a callback to make sure autodiscover hits a https endpoint
@@ -50,6 +52,86 @@ namespace TicketFromEmail365
 
             Logger.writeSingleLine(logMessage);
             return result;
+        }
+
+        private void ConnectToStream(ExchangeService authenticatedSession)
+        {
+            StreamingSubscription subscription = authenticatedSession.SubscribeToStreamingNotifications(
+                new FolderId[] { WellKnownFolderName.Inbox },
+                EventType.NewMail, // chose events that we want to listen for. could include deleted, modified, moved, etc
+                EventType.Created);
+
+            // Create a streaming connection to the service object, over which events are returned to the client.
+            // Keep the streaming connection open for 30 minutes.
+            StreamingSubscriptionConnection connection = new StreamingSubscriptionConnection(authenticatedSession, 30);
+            connection.AddSubscription(subscription);
+            connection.OnNotificationEvent += new StreamingSubscriptionConnection.NotificationEventDelegate(OnEvent);
+            connection.OnSubscriptionError += new StreamingSubscriptionConnection.SubscriptionErrorDelegate(OnError);
+            connection.OnDisconnect += new StreamingSubscriptionConnection.SubscriptionErrorDelegate(OnDisconnect); 
+
+            if (_currentConfig.LogLevel > 0)
+            {
+                Logger.writeSingleLine("Attempting to connect to EWS using streaming method for 30 minutes");
+            }
+            try
+            {
+                connection.Open();
+                if (_currentConfig.LogLevel > 0)
+                {
+                    Logger.writeSingleLine("Succesfully connected");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.writeSingleLine("Error connecting to EWS using streaming method");
+                Logger.writeSingleLine("Error: " + ex.ToString());
+            }
+        }
+
+        static private void OnEvent(object sender, NotificationEventArgs args) 
+        {
+            StreamingSubscription subscription = args.Subscription;
+
+            // Loop through all item-related events. 
+            foreach (NotificationEvent notification in args.Events)
+            {
+
+                switch (notification.EventType)
+                {
+                    case EventType.NewMail:
+                        Logger.writeSingleLine("New Mail!");
+                        break;
+                    case EventType.Created:
+                        Logger.writeSingleLine("New Item or Folder!");
+                        break;
+                }
+                // Display the notification identifier. 
+                if (notification is ItemEvent)
+                {
+                    // The NotificationEvent for an e-mail message is an ItemEvent. 
+                    ItemEvent itemEvent = (ItemEvent)notification;
+                    Logger.writeSingleLine("ItemId: " + itemEvent.ItemId.UniqueId);
+                }
+                else
+                {
+                    // The NotificationEvent for a folder is an FolderEvent. 
+                    FolderEvent folderEvent = (FolderEvent)notification;
+                    Logger.writeSingleLine("FolderId: " + folderEvent.FolderId.UniqueId);
+                }
+            } 
+        }
+
+        static private void OnDisconnect(object sender, SubscriptionErrorEventArgs args) 
+        {
+            Logger.writeSingleLine("Disconnecting from EWS");
+        }
+
+        static private void OnError(object sender, SubscriptionErrorEventArgs args)
+        {
+            // Handle error conditions. 
+            Exception e = args.Exception;
+            Logger.writeSingleLine("Error Encountered in EWS Stream");
+            Logger.writeSingleLine("Error: " + e.Message);
         }
     }
 }
