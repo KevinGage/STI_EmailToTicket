@@ -10,16 +10,16 @@ namespace TicketFromEmail365
 {
     class Config
     {
-        string configFile;
-        string error;
+        string _configFile;
+        string _error;
 
-        string user;
-        string password;
-        int logLevel;
+        string _user;
+        string _password;
+        int _logLevel;
 
         public Config(string path)
         {
-            configFile = path;
+            _configFile = path;
 
             loadConfig();
         }
@@ -28,44 +28,56 @@ namespace TicketFromEmail365
         {
             try
             {
-                if (File.Exists(configFile))
+                if (File.Exists(_configFile))
                 {
-                    TextReader tr = new StreamReader(configFile);
+                    TextReader tr = new StreamReader(_configFile);
 
-                    user = tr.ReadLine();
-                    password = tr.ReadLine();
+                    _user = tr.ReadLine();
+                    _password = tr.ReadLine();
 
                     string logLevelString = tr.ReadLine().Split('=')[1];
 
                     switch (logLevelString)
                     {
                         case "low":
-                            logLevel = 0;
+                            _logLevel = 0;
                             break;
                         case "medium":
-                            logLevel = 1;
+                            _logLevel = 1;
                             break;
                         case "high":
-                            logLevel = 2;
+                            _logLevel = 2;
                             break;
                     }
                 }
                 else
                 {
-                    error = "File doese not exist: " + configFile;
+                    _error = "File doese not exist: " + _configFile;
                 }
             }
             catch (Exception ex)
             {
-                error = "Unable to process config file: " + configFile + System.Environment.NewLine + "error: " + ex.ToString();
+                _error = "Unable to process config file: " + _configFile + System.Environment.NewLine + "error: " + ex.ToString();
             }
 
-            error = "";
+            _error = "";
         }
 
         public string Error
         {
-            get { return error; }
+            get { return _error; }
+        }
+        public string User
+        {
+            get { return _user; }
+        }
+        public string Password
+        {
+            get { return _password; }
+        }
+        public int LogLevel
+        {
+            get { return _logLevel; }
         }
     }
 }
