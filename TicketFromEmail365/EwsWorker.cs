@@ -63,7 +63,7 @@ namespace TicketFromEmail365
 
             // Create a streaming connection to the service object, over which events are returned to the client.
             // Keep the streaming connection open for 30 minutes.
-            StreamingSubscriptionConnection connection = new StreamingSubscriptionConnection(authenticatedSession, 30); //1 minute
+            StreamingSubscriptionConnection connection = new StreamingSubscriptionConnection(authenticatedSession, 30);
             connection.AddSubscription(subscription);
             connection.OnNotificationEvent += new StreamingSubscriptionConnection.NotificationEventDelegate(OnEvent);
             connection.OnSubscriptionError += new StreamingSubscriptionConnection.SubscriptionErrorDelegate(OnError);
