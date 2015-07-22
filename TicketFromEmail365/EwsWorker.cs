@@ -100,27 +100,29 @@ namespace TicketFromEmail365
                 {
                     case EventType.NewMail:
                         Logger.writeSingleLine("New Mail!");
+
+                        // Display the notification identifier. 
+                        if (notification is ItemEvent)
+                        {
+                            // The NotificationEvent for an e-mail message is an ItemEvent. 
+                            ItemEvent itemEvent = (ItemEvent)notification;
+                            Logger.writeSingleLine("ItemId: " + itemEvent.ItemId.UniqueId);
+
+                            StreamingSubscriptionConnection senderConnection = (StreamingSubscriptionConnection)sender;
+                            Logger.writeSingleLine(GetItemSubject(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
+                        }
+                        else
+                        {
+                            // The NotificationEvent for a folder is an FolderEvent. 
+                            FolderEvent folderEvent = (FolderEvent)notification;
+                            Logger.writeSingleLine("FolderId: " + folderEvent.FolderId.UniqueId);
+                        }
+
                         break;
-                    case EventType.Created:
-                        Logger.writeSingleLine("New Item or Folder!");
-                        break;
-                }
-                // Display the notification identifier. 
-                if (notification is ItemEvent)
-                {
-                    // The NotificationEvent for an e-mail message is an ItemEvent. 
-                    ItemEvent itemEvent = (ItemEvent)notification;
-                    Logger.writeSingleLine("ItemId: " + itemEvent.ItemId.UniqueId);
-                    
-                    StreamingSubscriptionConnection senderConnection = (StreamingSubscriptionConnection)sender;
-                    Logger.writeSingleLine(GetItemSubject(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
-                }
-                else
-                {
-                    // The NotificationEvent for a folder is an FolderEvent. 
-                    FolderEvent folderEvent = (FolderEvent)notification;
-                    Logger.writeSingleLine("FolderId: " + folderEvent.FolderId.UniqueId);
-                }
+//                    case EventType.Created:
+//                       Logger.writeSingleLine("New Item or Folder!");
+//                        break;
+                }         
             } 
         }
 
