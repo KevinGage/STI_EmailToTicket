@@ -110,6 +110,7 @@ namespace TicketFromEmail365
 
                             StreamingSubscriptionConnection senderConnection = (StreamingSubscriptionConnection)sender;
                             Logger.writeSingleLine(GetItemSubject(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
+                            Logger.writeSingleLine(GetItemBody(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
                         }
                         else
                         {
@@ -158,6 +159,30 @@ namespace TicketFromEmail365
             if (!(singleItem is Appointment))
             {
                 ItemInfo += "Item subject=" + singleItem.Subject;
+            }
+
+            return ItemInfo;
+        }
+
+        static private string GetItemBody(ItemId itemId, ExchangeService service)
+        {
+            // Retrieve the body for a given item
+            string ItemInfo = "";
+            Item singleItem;
+            PropertySet singleItemPropertySet = new PropertySet(ItemSchema.TextBody);
+
+            try
+            {
+                singleItem = Item.Bind(service, itemId, singleItemPropertySet);
+            }
+            catch (Exception ex)
+            {
+                return "Error retrieving message body Error message: " + System.Environment.NewLine + ex.Message + System.Environment.NewLine + " Message ID: " + itemId.ToString();
+            }
+
+            if (!(singleItem is Appointment))
+            {
+                ItemInfo += "Item body=" + singleItem.TextBody;
             }
 
             return ItemInfo;
