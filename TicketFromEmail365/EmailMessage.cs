@@ -25,6 +25,11 @@ namespace TicketFromEmail365
             return false;
         }
 
-
+        private void ProcessSubject()
+        {
+            //This should be triggered by CheckEmailDomain if the message is from a client.
+            //First check subject to see if it already includes a ticket number.  If yes verify ticket exists and is open.  Re-open if closed.
+            //If no create new ticket in database for appropriate client.  Change current subject to include ticket info
+        }
     }
 }
