@@ -88,7 +88,7 @@ namespace TicketFromEmail365
             }
         }
 
-        private static void OnEvent(object sender, NotificationEventArgs args) 
+        private void OnEvent(object sender, NotificationEventArgs args) 
         {
             StreamingSubscription subscription = args.Subscription;
 
@@ -109,8 +109,15 @@ namespace TicketFromEmail365
                             Logger.writeSingleLine("ItemId: " + itemEvent.ItemId.UniqueId);
 
                             StreamingSubscriptionConnection senderConnection = (StreamingSubscriptionConnection)sender;
-                            Logger.writeSingleLine(GetItemSubject(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
-                            Logger.writeSingleLine(GetItemBody(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
+
+                            if (_currentConfig.LogLevel > 0)
+                            {
+                                Logger.writeSingleLine(GetItemSubject(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
+                            }
+                            if (_currentConfig.LogLevel > 1)
+                            {
+                                Logger.writeSingleLine(GetItemBody(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
+                            }
                         }
                         else
                         {
