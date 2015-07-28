@@ -25,7 +25,7 @@ A C# service created to check an office 365 inbox for messages and auto-open tic
   
   On new email do the following 
   <OL>
-    <LI>Does the email subject already have a ticket number in in?</LI>
+    <LI>Does the email subject already have a ticket number in it?</LI>
     <OL>
       <LI>Yes, update relevant ticket notes, forward to distribution group, reply to client, delete email</LI>
       <LI>No, Is the message from a clients domain?</LI>
