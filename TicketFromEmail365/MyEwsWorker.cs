@@ -131,22 +131,26 @@ namespace TicketFromEmail365
                             try
                             {
                                 Item singleItem = Item.Bind(senderConnection.CurrentSubscriptions.First().Service, itemEvent.ItemId.UniqueId);
-                                EmailMessage message = (EmailMessage)singleItem;
-                                PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
-                                message.Load(propertiesToLoad);
+
+                                if (singleItem is EmailMessage)
+                                {
+                                    EmailMessage message = (EmailMessage)singleItem;
+                                    PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
+                                    message.Load(propertiesToLoad);
 
                                     if (_currentConfig.LogLevel > 0)
                                     {
-                                        MyLogger.writeSingleLine(message.Sender.Address);
+                                        MyLogger.writeSingleLine("Sender: " + message.Sender.Address);
                                     }
                                     if (_currentConfig.LogLevel > 0)
                                     {
-                                        MyLogger.writeSingleLine(message.Subject);
+                                        MyLogger.writeSingleLine("Subject: " + message.Subject);
                                     }
                                     if (_currentConfig.LogLevel > 1)
                                     {
-                                        MyLogger.writeSingleLine(message.TextBody);
+                                        MyLogger.writeSingleLine("Text Body: " + message.TextBody);
                                     }
+                                }
                             }
                             catch (Exception ex)
                             {
