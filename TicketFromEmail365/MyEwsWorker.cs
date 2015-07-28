@@ -150,6 +150,8 @@ namespace TicketFromEmail365
                                     {
                                         MyLogger.writeSingleLine("Text Body: " + message.TextBody);
                                     }
+
+                                    ForwardMessage(message, "I forwarded stuff", 123);
                                 }
                             }
                             catch (Exception ex)
@@ -203,12 +205,22 @@ namespace TicketFromEmail365
             MyLogger.writeSingleLine("Error: " + e.Message);
         }
 
-        private bool ForwardMessage(EmailMessage message, string prefixToMessage)
+        private bool ForwardMessage(EmailMessage message, string prefixToMessage, int ticketNumber)
         {
-            EmailAddress[] addresses = new EmailAddress[1];
-            addresses[0] = _currentConfig.EmailForward;
+            ResponseMessage responseMessage = message.CreateForward();
 
-            message.Forward(prefixToMessage, addresses);
+            responseMessage.BodyPrefix = prefixToMessage;
+
+            responseMessage.ToRecipients.Add(_currentConfig.EmailForward);
+
+            responseMessage.Subject = message.Subject;
+
+            if (!responseMessage.Subject.Contains("*** Ticket "))
+            {
+                responseMessage.Subject = responseMessage.Subject + " *** Ticket " + ticketNumber.ToString() + " ***";
+            }
+
+            responseMessage.SendAndSaveCopy();
 
             return false;
         }
