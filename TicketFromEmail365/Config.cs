@@ -17,6 +17,8 @@ namespace TicketFromEmail365
         string _password365;
         string _emailForward;
         string _dbServer;
+        string _dbPort;
+        string _dbName;
         string _userDb;
         string _passwordDb;
         int _logLevel;
@@ -86,6 +88,14 @@ namespace TicketFromEmail365
         public string DbServer
         {
             get { return _dbServer; }
+        }
+        public string DbPort
+        {
+            get { return _dbPort; }
+        }
+        public string DbName
+        {
+            get { return _dbName; }
         }
         public string UserDb
         {
