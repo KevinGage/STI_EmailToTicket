@@ -32,6 +32,8 @@ namespace TicketFromEmail365
 
         public void loadConfig()
         {
+            _error = "";
+
             try
             {
                 if (File.Exists(_configFile))
@@ -103,9 +105,7 @@ namespace TicketFromEmail365
             catch (Exception ex)
             {
                 _error = "Unable to process config file: " + _configFile + System.Environment.NewLine + "error: " + ex.ToString();
-            }
-
-            _error = "";
+            }   
         }
 
         public string Error
