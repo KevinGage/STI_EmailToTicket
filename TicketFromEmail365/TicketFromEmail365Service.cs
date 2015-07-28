@@ -23,7 +23,7 @@ namespace TicketFromEmail365
            // TODO: add startup stuff for running as service
             if (!Logger.checkLogFile())
             {
-                // do something here to stop service
+                Environment.Exit(1); //not sure if this works
             }
             Logger.writeSingleLine("Program started in service mode");
 
@@ -33,7 +33,7 @@ namespace TicketFromEmail365
             {
                 Logger.writeSingleLine(conf.Error);
                 Logger.writeSingleLine("Terminating");
-                // do something here to stop service
+                Environment.Exit(1); //not sure if this works
             }
             Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
 
@@ -41,7 +41,7 @@ namespace TicketFromEmail365
             {
                 Logger.writeSingleLine("Error testing database connection");
                 Logger.writeSingleLine("Terminating");
-                // do something here to stop service
+                Environment.Exit(1); //not sure if this works
             }
             Logger.writeSingleLine(@"Succesfully tested database connection.");
 
