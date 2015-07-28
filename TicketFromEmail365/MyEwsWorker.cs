@@ -121,30 +121,36 @@ namespace TicketFromEmail365
                         {
                             // The NotificationEvent for an e-mail message is an ItemEvent. 
                             ItemEvent itemEvent = (ItemEvent)notification;
-                            MyLogger.writeSingleLine("ItemId: " + itemEvent.ItemId.UniqueId);
+                            if (_currentConfig.LogLevel > 1)
+                            {
+                                MyLogger.writeSingleLine("ItemId: " + itemEvent.ItemId.UniqueId);
+                            }
 
                             StreamingSubscriptionConnection senderConnection = (StreamingSubscriptionConnection)sender;
 
-                            string[] messageInfo = GetMessageInfoArray(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service);
+                            try
+                            {
+                                Item singleItem = Item.Bind(senderConnection.CurrentSubscriptions.First().Service, itemEvent.ItemId.UniqueId);
+                                EmailMessage message = (EmailMessage)singleItem;
+                                PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
+                                message.Load(propertiesToLoad);
 
-                            if (messageInfo[0] == null)
-                            {
-                                if (_currentConfig.LogLevel > 0)
-                                {
-                                    MyLogger.writeSingleLine(messageInfo[1]);
-                                }
-                                if (_currentConfig.LogLevel > 0)
-                                {
-                                    MyLogger.writeSingleLine(messageInfo[2]);
-                                }
-                                if (_currentConfig.LogLevel > 1)
-                                {
-                                    MyLogger.writeSingleLine(messageInfo[3]);
-                                }
+                                    if (_currentConfig.LogLevel > 0)
+                                    {
+                                        MyLogger.writeSingleLine(message.Sender.Address);
+                                    }
+                                    if (_currentConfig.LogLevel > 0)
+                                    {
+                                        MyLogger.writeSingleLine(message.Subject);
+                                    }
+                                    if (_currentConfig.LogLevel > 1)
+                                    {
+                                        MyLogger.writeSingleLine(message.TextBody);
+                                    }
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                MyLogger.writeSingleLine(messageInfo[0]);
+                                MyLogger.writeSingleLine("Error retrieving message information.  Error: " + ex.ToString());
                             }
 
                         }
@@ -193,33 +199,14 @@ namespace TicketFromEmail365
             MyLogger.writeSingleLine("Error: " + e.Message);
         }
 
-        static private string[] GetMessageInfoArray(ItemId itemId, ExchangeService service)
+        private bool ForwardMessage(EmailMessage message, string prefixToMessage)
         {
-            //should return string array like this [error, sender, subject, plainBody, htmlBody]
-            //if no errors happen messageInfo[0] should be ""
-            string[] messageInfo = new string[5];
+            EmailAddress[] addresses = new EmailAddress[1];
+            addresses[0] = _currentConfig.EmailForward;
 
-            try
-            {
-                Item singleItem = Item.Bind(service, itemId);
-                EmailMessage message = (EmailMessage)singleItem;
-                PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
-                message.Load(propertiesToLoad);
+            message.Forward(prefixToMessage, addresses);
 
-                messageInfo[1] = message.Sender.Address;
-
-                messageInfo[2] = message.Subject;
-
-                messageInfo[3] = message.TextBody;
-
-                messageInfo[4] = message.Body;
-            }
-            catch (Exception ex)
-            {
-                messageInfo[0] = "Error retrieving message information.  Error: " + ex.ToString();
-            }
-
-            return messageInfo;
+            return false;
         }
 
         public string Error
