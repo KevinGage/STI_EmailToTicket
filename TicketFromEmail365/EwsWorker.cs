@@ -11,9 +11,11 @@ namespace TicketFromEmail365
     class EwsWorker
     {
         Config _currentConfig;
+        string _error;
 
         public EwsWorker(Config config)
         {
+            _error = "";
             _currentConfig = config;
 
             ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2013_SP1);
@@ -25,9 +27,20 @@ namespace TicketFromEmail365
             {
                 Logger.writeSingleLine("Attempting to login as: " + _currentConfig.User365);
             }
-            service.AutodiscoverUrl(_currentConfig.User365, RedirectionUrlValidationCallback);
+            try
+            {
+                service.AutodiscoverUrl(_currentConfig.User365, RedirectionUrlValidationCallback);
+            }
+            catch
+            {
+                Logger.writeSingleLine("Login attempt to email server failed");
+                _error = ("Login attempt to email server failed");
+            }
 
-            ConnectToStream(service);
+            if (_error != "")
+            {
+                ConnectToStream(service);
+            }
         }
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl) // used as a callback to make sure autodiscover hits a https endpoint
@@ -210,6 +223,11 @@ namespace TicketFromEmail365
             }
 
             return ItemInfo;
+        }
+
+        public string Error
+        {
+            get { return _error; }
         }
     }
 }

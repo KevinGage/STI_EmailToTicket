@@ -46,6 +46,12 @@ namespace TicketFromEmail365
             Logger.writeSingleLine(@"Succesfully tested database connection.");
 
             EwsWorker worker = new EwsWorker(conf);
+
+            //Not sure if something is needed here to keep service running.  Or will the worker object keep the service alive?
+            if (worker.Error == "")
+            {
+                //Do stuff to keep the service running???
+            }
         }
 
         protected override void OnStop()

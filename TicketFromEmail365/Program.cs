@@ -46,8 +46,11 @@ namespace TicketFromEmail365
 
                 EwsWorker worker = new EwsWorker(conf);
 
-                Console.WriteLine("Press Enter to terminate ...");
-                Console.ReadLine();
+                if (worker.Error == "")
+                {
+                    Console.WriteLine("Press Enter to terminate ...");
+                    Console.ReadLine();
+                }
 
                 serviceToRun.DoStop();
             }
