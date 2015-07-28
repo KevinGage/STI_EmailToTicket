@@ -8,7 +8,7 @@ using System.IO;
 
 namespace TicketFromEmail365
 {
-    class Config
+    class MyConfig
     {
         string _configFile;
         string _error;
@@ -23,7 +23,7 @@ namespace TicketFromEmail365
         string _passwordDb;
         int _logLevel;
 
-        public Config(string path)
+        public MyConfig(string path)
         {
             _configFile = path;
 

@@ -8,9 +8,9 @@ using System.IO;
 
 namespace TicketFromEmail365
 {
-    class Logger
+    class MyLogger
     {
-        public Logger()
+        public MyLogger()
         {
 
         }

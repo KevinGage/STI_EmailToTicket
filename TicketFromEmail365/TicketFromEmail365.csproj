@@ -50,10 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config.cs" />
-    <Compile Include="EmailMessage.cs" />
-    <Compile Include="EwsWorker.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="MyConfig.cs" />
+    <Compile Include="MyEmailMessage.cs" />
+    <Compile Include="MyEwsWorker.cs" />
+    <Compile Include="MyLogger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TicketFromEmail365Installer.cs">

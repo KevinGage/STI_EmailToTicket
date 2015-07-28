@@ -8,13 +8,13 @@ using System.Data.SqlClient;
 
 namespace TicketFromEmail365
 {
-    class EmailMessage
+    class MyEmailMessage
     {
         string _sender;
         string _subject;
         string _body;
 
-        public EmailMessage(string sender, string subject, string body)
+        public MyEmailMessage(string sender, string subject, string body)
         {
             _sender = sender;
             _subject = subject;
@@ -34,7 +34,7 @@ namespace TicketFromEmail365
             //If no create new ticket in database for appropriate client.  Change current subject to include ticket info
         }
 
-        public static bool TestDatabaseConnection(Config currentConfig)
+        public static bool TestDatabaseConnection(MyConfig currentConfig)
         {
             //This should take in a config and test the connection to the database
             SqlConnectionStringBuilder builder = new System.Data.SqlClient.SqlConnectionStringBuilder();

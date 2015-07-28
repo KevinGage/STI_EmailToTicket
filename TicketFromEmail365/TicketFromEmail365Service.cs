@@ -21,31 +21,31 @@ namespace TicketFromEmail365
         protected override void OnStart(string[] args)
         {
            // TODO: add startup stuff for running as service
-            if (!Logger.checkLogFile())
+            if (!MyLogger.checkLogFile())
             {
                 Environment.Exit(1); //not sure if this works
             }
-            Logger.writeSingleLine("Program started in service mode");
+            MyLogger.writeSingleLine("Program started in service mode");
 
-            Config conf = new Config(@".\TicketsFromEmail365.cfg");
+            MyConfig conf = new MyConfig(@".\TicketsFromEmail365.cfg");
 
             if (conf.Error != "")
             {
-                Logger.writeSingleLine(conf.Error);
-                Logger.writeSingleLine("Terminating");
+                MyLogger.writeSingleLine(conf.Error);
+                MyLogger.writeSingleLine("Terminating");
                 Environment.Exit(1); //not sure if this works
             }
-            Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
+            MyLogger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
 
-            if (!EmailMessage.TestDatabaseConnection(conf))
+            if (!MyEmailMessage.TestDatabaseConnection(conf))
             {
-                Logger.writeSingleLine("Error testing database connection");
-                Logger.writeSingleLine("Terminating");
+                MyLogger.writeSingleLine("Error testing database connection");
+                MyLogger.writeSingleLine("Terminating");
                 Environment.Exit(1); //not sure if this works
             }
-            Logger.writeSingleLine(@"Succesfully tested database connection.");
+            MyLogger.writeSingleLine(@"Succesfully tested database connection.");
 
-            EwsWorker worker = new EwsWorker(conf);
+            MyEwsWorker worker = new MyEwsWorker(conf);
 
             //Not sure if something is needed here to keep service running.  Or will the worker object keep the service alive?
             if (worker.Error == "")
@@ -64,7 +64,7 @@ namespace TicketFromEmail365
             // TODO: add startup stuff for running as console for debugging
             // Delete function when done developing program
             
-            Logger.writeSingleLine("Program started in debugging mode");
+            MyLogger.writeSingleLine("Program started in debugging mode");
         }
 
         public void DoStop()
