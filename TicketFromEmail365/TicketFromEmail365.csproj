@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MyConfig.cs" />
-    <Compile Include="MyEmailMessage.cs" />
+    <Compile Include="MyTicketWorker.cs" />
     <Compile Include="MyEwsWorker.cs" />
     <Compile Include="MyLogger.cs" />
     <Compile Include="Program.cs" />

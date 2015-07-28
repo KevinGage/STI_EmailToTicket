@@ -37,7 +37,7 @@ namespace TicketFromEmail365
             }
             MyLogger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
 
-            if (!MyEmailMessage.TestDatabaseConnection(conf))
+            if (!MyTicketWorker.TestDatabaseConnection(conf))
             {
                 MyLogger.writeSingleLine("Error testing database connection");
                 MyLogger.writeSingleLine("Terminating");
