@@ -36,24 +36,63 @@ namespace TicketFromEmail365
             {
                 if (File.Exists(_configFile))
                 {
-                    TextReader tr = new StreamReader(_configFile);
-
-                    _user365 = tr.ReadLine();
-                    _password365 = tr.ReadLine();
-
-                    string logLevelString = tr.ReadLine().Split('=')[1];
-
-                    switch (logLevelString)
+                    string[] readText = File.ReadAllLines(_configFile);
+                    
+                    foreach (string s in readText)
                     {
-                        case "low":
-                            _logLevel = 0;
-                            break;
-                        case "medium":
-                            _logLevel = 1;
-                            break;
-                        case "high":
-                            _logLevel = 2;
-                            break;
+                        string[] split = s.Split('=');
+                        if (split.Count() < 2)
+                        {
+                            _error = "Invalid value found in config file: " + s;
+                        }
+                        else
+                        {
+                            switch (split[0])
+                            {
+                                case "user365":
+                                    _user365 = split[1];
+                                    break;
+                                case "pass365":
+                                    _password365 = split[1];
+                                    break;
+                                case "forward":
+                                    _emailForward = split[1];
+                                    break;
+                                case "dbserver":
+                                    _dbServer = split[1];
+                                    break;
+                                case "dbport":
+                                    _dbPort = split[1];
+                                    break;
+                                case "dbname":
+                                    _dbName = split[1];
+                                    break;
+                                case "dbuser":
+                                    _userDb = split[1];
+                                    break;
+                                case "dbpassword":
+                                    _passwordDb = split[1];
+                                    break;
+                                case "log":
+                                    switch (split[1])
+                                    {
+                                        case "low":
+                                            _logLevel = 0;
+                                            break;
+                                        case "medium":
+                                            _logLevel = 1;
+                                            break;
+                                        case "high":
+                                            _logLevel = 2;
+                                            break;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    if (_user365 == "" || _password365 == "" || _emailForward == "" || _dbServer == "" || _dbPort == "" || _dbName == "" || _userDb == "" || _passwordDb == "" || _logLevel < 0 || _logLevel > 2)
+                    {
+                        _error = "Missing required config file parameter.  Must have user365, pass365, forward, dbserver, dbport, dbname, dbuser, dbpassword, and log.  parameter name and vaue must be seperated with =";
                     }
                 }
                 else
