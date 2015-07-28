@@ -118,7 +118,7 @@ namespace TicketFromEmail365
         }
         public string Password365
         {
-            get { return _user365; }
+            get { return _password365; }
         }
         public string EmailForward
         {
