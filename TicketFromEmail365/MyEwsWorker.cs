@@ -125,19 +125,28 @@ namespace TicketFromEmail365
 
                             StreamingSubscriptionConnection senderConnection = (StreamingSubscriptionConnection)sender;
 
-                            if (_currentConfig.LogLevel > 0)
+                            string[] messageInfo = GetMessageInfoArray(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service);
+
+                            if (messageInfo[0] == null)
                             {
-                                MyLogger.writeSingleLine(GetItemSender(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
+                                if (_currentConfig.LogLevel > 0)
+                                {
+                                    MyLogger.writeSingleLine(messageInfo[1]);
+                                }
+                                if (_currentConfig.LogLevel > 0)
+                                {
+                                    MyLogger.writeSingleLine(messageInfo[2]);
+                                }
+                                if (_currentConfig.LogLevel > 1)
+                                {
+                                    MyLogger.writeSingleLine(messageInfo[3]);
+                                }
+                            }
+                            else
+                            {
+                                MyLogger.writeSingleLine(messageInfo[0]);
                             }
 
-                            if (_currentConfig.LogLevel > 0)
-                            {
-                                MyLogger.writeSingleLine(GetItemSubject(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
-                            }
-                            if (_currentConfig.LogLevel > 1)
-                            {
-                                MyLogger.writeSingleLine(GetItemBody(itemEvent.ItemId.UniqueId, senderConnection.CurrentSubscriptions.First().Service));
-                            }
                         }
                         else
                         {
@@ -249,6 +258,35 @@ namespace TicketFromEmail365
             }
 
             return ItemInfo;
+        }
+
+        static private string[] GetMessageInfoArray(ItemId itemId, ExchangeService service)
+        {
+            //should return string array like this [error, sender, subject, plainBody, htmlBody]
+            //if no errors happen messageInfo[0] should be ""
+            string[] messageInfo = new string[5];
+
+            try
+            {
+                Item singleItem = Item.Bind(service, itemId);
+                EmailMessage message = (EmailMessage)singleItem;
+                PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
+                message.Load(propertiesToLoad);
+
+                messageInfo[1] = message.Sender.Address;
+
+                messageInfo[2] = message.Subject;
+
+                messageInfo[3] = message.TextBody;
+
+                messageInfo[4] = message.Body;
+            }
+            catch (Exception ex)
+            {
+                messageInfo[0] = "Error retrieving message information.  Error: " + ex.ToString();
+            }
+
+            return messageInfo;
         }
 
         public string Error
