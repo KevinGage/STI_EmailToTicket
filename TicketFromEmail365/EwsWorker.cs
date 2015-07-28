@@ -37,7 +37,7 @@ namespace TicketFromEmail365
                 _error = ("Login attempt to email server failed");
             }
 
-            if (_error != "")
+            if (_error == "")
             {
                 ConnectToStream(service);
             }
@@ -69,25 +69,26 @@ namespace TicketFromEmail365
 
         private void ConnectToStream(ExchangeService authenticatedSession)
         {
-            StreamingSubscription subscription = authenticatedSession.SubscribeToStreamingNotifications(
-                new FolderId[] { WellKnownFolderName.Inbox },
-                EventType.NewMail, // chose events that we want to listen for. could include deleted, modified, moved, etc
-                EventType.Created);
-
-            // Create a streaming connection to the service object, over which events are returned to the client.
-            // Keep the streaming connection open for 30 minutes.
-            StreamingSubscriptionConnection connection = new StreamingSubscriptionConnection(authenticatedSession, 30);
-            connection.AddSubscription(subscription);
-            connection.OnNotificationEvent += new StreamingSubscriptionConnection.NotificationEventDelegate(OnEvent);
-            connection.OnSubscriptionError += new StreamingSubscriptionConnection.SubscriptionErrorDelegate(OnError);
-            connection.OnDisconnect += new StreamingSubscriptionConnection.SubscriptionErrorDelegate(OnDisconnect); 
-
-            if (_currentConfig.LogLevel > 0)
-            {
-                Logger.writeSingleLine("Attempting to connect to EWS using streaming method for 30 minutes");
-            }
             try
             {
+                StreamingSubscription subscription = authenticatedSession.SubscribeToStreamingNotifications(
+                    new FolderId[] { WellKnownFolderName.Inbox },
+                    EventType.NewMail, // chose events that we want to listen for. could include deleted, modified, moved, etc
+                    EventType.Created);
+
+                // Create a streaming connection to the service object, over which events are returned to the client.
+                // Keep the streaming connection open for 30 minutes.
+                StreamingSubscriptionConnection connection = new StreamingSubscriptionConnection(authenticatedSession, 30);
+                connection.AddSubscription(subscription);
+                connection.OnNotificationEvent += new StreamingSubscriptionConnection.NotificationEventDelegate(OnEvent);
+                connection.OnSubscriptionError += new StreamingSubscriptionConnection.SubscriptionErrorDelegate(OnError);
+                connection.OnDisconnect += new StreamingSubscriptionConnection.SubscriptionErrorDelegate(OnDisconnect); 
+
+                if (_currentConfig.LogLevel > 0)
+                {
+                    Logger.writeSingleLine("Attempting to connect to EWS using streaming method for 30 minutes");
+                }
+            
                 connection.Open();
                 if (_currentConfig.LogLevel > 0)
                 {
@@ -96,6 +97,7 @@ namespace TicketFromEmail365
             }
             catch (Exception ex)
             {
+                _error = "Error connecting to EWS using streaming method: " + ex.ToString();
                 Logger.writeSingleLine("Error connecting to EWS using streaming method");
                 Logger.writeSingleLine("Error: " + ex.ToString());
             }
