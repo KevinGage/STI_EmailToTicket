@@ -19,6 +19,11 @@ namespace TicketFromEmail365
 
             if (Environment.UserInteractive)
             {
+                if (!Logger.checkLogFile())
+                {
+                    serviceToRun.DoStop();
+                }
+
                 serviceToRun.Start();
 
                 Config conf = new Config(@".\TicketsFromEmail365.cfg");
@@ -29,11 +34,17 @@ namespace TicketFromEmail365
                     Logger.writeSingleLine("Terminating");
                     serviceToRun.DoStop();
                 }
-                else
+                Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
+
+                if (!EmailMessage.TestDatabaseConnection(conf))
                 {
-                    Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
-                    EwsWorker worker = new EwsWorker(conf);
+                    Logger.writeSingleLine("Error testing database connection");
+                    Logger.writeSingleLine("Terminating");
+                    serviceToRun.DoStop();
                 }
+                Logger.writeSingleLine(@"Succesfully tested database connection.");
+
+                EwsWorker worker = new EwsWorker(conf);
 
                 Console.WriteLine("Press Enter to terminate ...");
                 Console.ReadLine();

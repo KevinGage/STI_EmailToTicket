@@ -21,7 +21,10 @@ namespace TicketFromEmail365
         protected override void OnStart(string[] args)
         {
            // TODO: add startup stuff for running as service
-            Logger.checkLogFile();
+            if (!Logger.checkLogFile())
+            {
+                // do something here to stop service
+            }
             Logger.writeSingleLine("Program started in service mode");
 
             Config conf = new Config(@".\TicketsFromEmail365.cfg");
@@ -32,11 +35,17 @@ namespace TicketFromEmail365
                 Logger.writeSingleLine("Terminating");
                 // do something here to stop service
             }
-            else
+            Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
+
+            if (!EmailMessage.TestDatabaseConnection(conf))
             {
-                Logger.writeSingleLine(@"Succesfully Read Config File: .\TicketsFromEmail365.cfg");
-                EwsWorker worker = new EwsWorker(conf);
+                Logger.writeSingleLine("Error testing database connection");
+                Logger.writeSingleLine("Terminating");
+                // do something here to stop service
             }
+            Logger.writeSingleLine(@"Succesfully tested database connection.");
+
+            EwsWorker worker = new EwsWorker(conf);
         }
 
         protected override void OnStop()
@@ -48,7 +57,7 @@ namespace TicketFromEmail365
         {
             // TODO: add startup stuff for running as console for debugging
             // Delete function when done developing program
-            Logger.checkLogFile();
+            
             Logger.writeSingleLine("Program started in debugging mode");
         }
 
