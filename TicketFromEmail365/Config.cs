@@ -13,8 +13,12 @@ namespace TicketFromEmail365
         string _configFile;
         string _error;
 
-        string _user;
-        string _password;
+        string _user365;
+        string _password365;
+        string _emailForward;
+        string _dbServer;
+        string _userDb;
+        string _passwordDb;
         int _logLevel;
 
         public Config(string path)
@@ -32,8 +36,8 @@ namespace TicketFromEmail365
                 {
                     TextReader tr = new StreamReader(_configFile);
 
-                    _user = tr.ReadLine();
-                    _password = tr.ReadLine();
+                    _user365 = tr.ReadLine();
+                    _password365 = tr.ReadLine();
 
                     string logLevelString = tr.ReadLine().Split('=')[1];
 
@@ -67,13 +71,29 @@ namespace TicketFromEmail365
         {
             get { return _error; }
         }
-        public string User
+        public string User365
         {
-            get { return _user; }
+            get { return _user365; }
         }
-        public string Password
+        public string Password365
         {
-            get { return _password; }
+            get { return _user365; }
+        }
+        public string EmailForward
+        {
+            get { return _emailForward; }
+        }
+        public string DbServer
+        {
+            get { return _dbServer; }
+        }
+        public string UserDb
+        {
+            get { return _userDb; }
+        }
+        public string PasswordDb
+        {
+            get { return _passwordDb; }
         }
         public int LogLevel
         {
