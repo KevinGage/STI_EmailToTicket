@@ -33,12 +33,29 @@ namespace TicketFromEmail365
 
         }
 
-        public static void checkLogFile()
+        public static bool checkLogFile()
         {
             if (!File.Exists(@"./Log.txt"))
             {
-                System.IO.File.AppendAllText(@"./Log.txt", "Date Time:                Event:" + System.Environment.NewLine);
+                try
+                {
+                    System.IO.File.AppendAllText(@"./Log.txt", "Date Time:                Event:" + System.Environment.NewLine);
+                }
+                catch
+                {
+                    return false;
+                }
             }
+            try
+            {
+                System.IO.File.AppendAllText(@"./Log.txt", "Log File Initialized" + System.Environment.NewLine);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
         }
     }
 }
