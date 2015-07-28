@@ -40,7 +40,7 @@ namespace TicketFromEmail365
             SqlConnectionStringBuilder builder = new System.Data.SqlClient.SqlConnectionStringBuilder();
             builder["Data Source"] = currentConfig.DbServer + "," + currentConfig.DbPort;
             builder["integrated Security"] = false;
-            builder["ID"] = currentConfig.UserDb;
+            builder.UserID = currentConfig.UserDb;
             builder["Password"] = currentConfig.PasswordDb;
             builder["Initial Catalog"] = currentConfig.DbName;
 
