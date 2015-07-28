@@ -19,13 +19,13 @@ namespace TicketFromEmail365
             ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2013_SP1);
 
             service.UseDefaultCredentials = false;
-            service.Credentials = new WebCredentials(_currentConfig.User, _currentConfig.Password);
+            service.Credentials = new WebCredentials(_currentConfig.User365, _currentConfig.Password365);
 
             if (_currentConfig.LogLevel > 0)
             {
-                Logger.writeSingleLine("Attempting to login as: " + _currentConfig.User);
+                Logger.writeSingleLine("Attempting to login as: " + _currentConfig.User365);
             }
-            service.AutodiscoverUrl(_currentConfig.User, RedirectionUrlValidationCallback);
+            service.AutodiscoverUrl(_currentConfig.User365, RedirectionUrlValidationCallback);
 
             ConnectToStream(service);
         }
