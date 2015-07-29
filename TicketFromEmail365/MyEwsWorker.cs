@@ -139,6 +139,7 @@ namespace TicketFromEmail365
                                 {
                                     EmailMessage message = (EmailMessage)singleItem;
                                     PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
+
                                     message.Load(propertiesToLoad);
                                     /*
                                     if (_currentConfig.LogLevel > 0)
@@ -156,6 +157,7 @@ namespace TicketFromEmail365
 
                                     ForwardMessage(message, "I forwarded stuff", 123);
                                     */
+
                                     MyTicketWorker ticketWorker = new MyTicketWorker(message);
 
                                     if (ticketWorker.TicketNumber != 0 && ticketWorker.Error == "")
