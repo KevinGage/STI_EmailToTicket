@@ -114,7 +114,10 @@ namespace TicketFromEmail365
                 switch (notification.EventType)
                 {
                     case EventType.NewMail:
-                        MyLogger.writeSingleLine("New Mail!");
+                        if (_currentConfig.LogLevel > 0)
+                        {
+                            MyLogger.writeSingleLine("New Mail");
+                        }
 
                         // Display the notification identifier. 
                         if (notification is ItemEvent)
@@ -137,7 +140,7 @@ namespace TicketFromEmail365
                                     EmailMessage message = (EmailMessage)singleItem;
                                     PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
                                     message.Load(propertiesToLoad);
-
+                                    /*
                                     if (_currentConfig.LogLevel > 0)
                                     {
                                         MyLogger.writeSingleLine("Sender: " + message.Sender.Address);
@@ -152,6 +155,37 @@ namespace TicketFromEmail365
                                     }
 
                                     ForwardMessage(message, "I forwarded stuff", 123);
+                                    */
+                                    MyTicketWorker ticketWorker = new MyTicketWorker(message);
+
+                                    if (ticketWorker.TicketNumber != 0 && ticketWorker.Error == "")
+                                    {
+                                        //ticket exists. no error
+                                        //ticket should be updated
+                                        //respond to sender 
+                                        //forward to sti
+                                    }
+                                    else if (ticketWorker.TicketNumber == 0 && ticketWorker.Error == "")
+                                    {
+                                        //ticket doesn't exist. no error
+                                        //check client domain
+                                        if (ticketWorker.CheckClientDomain())
+                                        {
+                                            //is client
+                                            //open ticket
+                                            //response to client
+                                            //forward to sti
+                                        }
+                                        else
+                                        {
+                                            //not a client
+                                            //just forward email to sti
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //error
+                                    }
                                 }
                             }
                             catch (Exception ex)

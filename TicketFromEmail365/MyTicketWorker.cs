@@ -27,7 +27,7 @@ namespace TicketFromEmail365
         {
             //this will fire when a new ticket worker is created.
             //it should check _message subject for *** Ticket # ***
-            //if ticket number found set _ticketNumber
+            //if ticket number found set _ticketNumber and update ticket
             //if not set ticket number to 0
             _ticketNumber = 0;
         }
@@ -50,7 +50,7 @@ namespace TicketFromEmail365
 
         private bool OpenTicket()
         {
-            //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody
+            //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody, openedby?
             //return true if everything worked
             return false;
         }
@@ -78,6 +78,15 @@ namespace TicketFromEmail365
                 }
             }
 
+        }
+
+        public int TicketNumber
+        {
+            get { return _ticketNumber; }
+        }
+        public string Error
+        {
+            get { return _error; }
         }
     }
 }
