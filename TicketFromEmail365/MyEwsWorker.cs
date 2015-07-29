@@ -162,8 +162,8 @@ namespace TicketFromEmail365
                                     {
                                         //ticket exists. no error
                                         //ticket should be updated
-                                        //respond to sender 
                                         //forward to sti
+                                        //dont forward to client
                                     }
                                     else if (ticketWorker.TicketNumber == 0 && ticketWorker.Error == "")
                                     {
@@ -180,6 +180,7 @@ namespace TicketFromEmail365
                                         {
                                             //not a client
                                             //just forward email to sti
+                                            
                                         }
                                     }
                                     else
