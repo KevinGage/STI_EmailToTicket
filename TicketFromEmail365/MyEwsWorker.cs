@@ -158,7 +158,7 @@ namespace TicketFromEmail365
                                             }
                                         }
                                     }
-                                    else if (ticketWorker.TicketNumber == 0 && ticketWorker.Error == "")
+                                    else if (ticketWorker.TicketNumber == 0 && ticketWorker.Error == null)
                                     {
                                         //ticket doesn't exist. no error
                                         //check client domain
