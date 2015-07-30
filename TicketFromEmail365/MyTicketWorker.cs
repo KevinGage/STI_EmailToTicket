@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using System.Data.SqlClient;
 using Microsoft.Exchange.WebServices.Data;
+using System.Text.RegularExpressions;
 
 namespace TicketFromEmail365
 {
@@ -29,13 +30,21 @@ namespace TicketFromEmail365
             //it should check _message subject for *** Ticket # ***
             //if ticket number found set _ticketNumber and update ticket
             //if not set ticket number to 0
-            _ticketNumber = 0;
+            if (Regex.Matches(_message.Subject, "\\*{3} Ticket \\d{1,} \\*{3}").Count > 0)
+            {
+                //ticket exists in subject
+            }
+            else
+            {
+                _ticketNumber = 0;
+            }         
         }
 
         public bool UpdateTicket()
         {
             //this should update the _ticketNumber ticket with _message in notes
             //return false if error
+
             return false;
         }
 
@@ -50,7 +59,7 @@ namespace TicketFromEmail365
 
         private bool OpenTicket()
         {
-            //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody, From address, cc addresses
+            //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody as ticket issue, From address, cc addresses
             //return true if everything worked
             return false;
         }
