@@ -29,7 +29,7 @@ namespace TicketFromEmail365
         private void SubjectHasTicketNumber()
         {
             //this will fire when a new ticket worker is created.
-            //it should check _message subject for exactly one instance of *** Ticket 
+            //it should check _message subject for exactly one instance of *** Ticket # ***
             //if ticket number found set _ticketNumber and update ticket
             //if not set ticket number to 0
             MatchCollection matches = Regex.Matches(_message.Subject, "\\*{3} Ticket \\d{1,} \\*{3}");
@@ -105,14 +105,63 @@ namespace TicketFromEmail365
             //if not exactly 1 result found return false
             //if 1 result found set _clientID and _primaryTech, OpenTicket().
             //if open ticket succeeds return true.
-            return false;
+            string senderDomain = _message.Sender.Address.Split('@')[1];
+
+            string connectionString = BuildConnectionString(_config);
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT ClientEmailDomains from Clients WHERE ClientEmailDomains IS NOT NULL", conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if(reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            string[] allDomains = reader["ClientEmailDomains"].ToString().Split(',');
+                            foreach (string s in allDomains)
+                            {
+                                if(s == senderDomain)
+                                {
+                                    if (OpenTicket())
+                                    {
+                                        _error = null;
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                        if (_config.LogLevel > 1)
+                        {
+                            MyLogger.writeSingleLine("email domain not found in database. Domain: " + senderDomain);
+                        }
+                        _error = null;
+                        return false;
+                    }
+                    else
+                    {
+
+                        MyLogger.writeSingleLine("No email domains found in database Clients table");
+                        _error = "No email domains found in database Clients table";
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MyLogger.writeSingleLine("Error check client domain.  Error: " + ex.ToString());
+                _error = "Error check client domain.  Error: " + ex.ToString();
+                return false;
+            }     
         }
 
         private bool OpenTicket()
         {
             //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody as ticket issue, From address, cc addresses
             //return true if everything worked
-            return false;
+            return true;
         }
 
         public static bool TestDatabaseConnection(MyConfig currentConfig)
