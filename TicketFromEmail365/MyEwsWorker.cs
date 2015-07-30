@@ -150,12 +150,13 @@ namespace TicketFromEmail365
                                         //ticket should be updated
                                         //forward to sti
                                         //Also reply to the sender and any email address in the ticket databse. NOT DONE YET
-                                        if (ForwardMessage(message, "ticket notes updated"))
+                                        if (ForwardMessage(message, "ticket notes updated", _currentConfig.EmailForward))
                                         {
                                             if (_currentConfig.LogLevel > 1)
                                             {
                                                 MyLogger.writeSingleLine("Ticket Succesfully updated and email forwarded: Ticket " + ticketWorker.TicketNumber.ToString());
                                             }
+                                            message.Delete(DeleteMode.SoftDelete);
                                         }
                                     }
                                     else if (ticketWorker.TicketNumber == 0 && ticketWorker.Error == null)
@@ -168,12 +169,45 @@ namespace TicketFromEmail365
                                             //open ticket
                                             //response to client
                                             //forward to sti
+                                            if (ticketWorker.TicketNumber != 0)
+                                            {
+                                                string replyMessage = "Your email was received and assigned ticket number " + 
+                                                    ticketWorker.TicketNumber.ToString() + System.Environment.NewLine + 
+                                                    "An engineer will reach out to you as soon as possible." + 
+                                                    System.Environment.NewLine + System.Environment.NewLine + 
+                                                    "Thank You," + System.Environment.NewLine + 
+                                                    "Siroonian Technologies" + System.Environment.NewLine + 
+                                                    "781-350-3596";
+                                                bool problem = false;
+                                                foreach (string s in ticketWorker.TicketEmailAddresses)
+                                                {
+                                                    if (!ForwardMessage(message, replyMessage, _currentConfig.EmailForward))
+                                                    {
+                                                        problem = true;
+                                                    }
+                                                }
+                                                if (!problem)
+                                                {
+                                                    if (_currentConfig.LogLevel > 1)
+                                                    {
+                                                        MyLogger.writeSingleLine("email sent to all addresses.");
+                                                    }
+                                                    message.Delete(DeleteMode.SoftDelete);
+                                                }
+                                            }
                                         }
                                         else
                                         {
                                             //not a client
                                             //just forward email to sti
-                                            
+                                            if (ForwardMessage(message, "No ticket", _currentConfig.EmailForward))
+                                            {
+                                                if (_currentConfig.LogLevel > 1)
+                                                {
+                                                    MyLogger.writeSingleLine("email forwarded. no ticket.");
+                                                }
+                                                message.Delete(DeleteMode.SoftDelete);
+                                            }
                                         }
                                     }
                                     else
@@ -234,7 +268,7 @@ namespace TicketFromEmail365
             MyLogger.writeSingleLine("Error: " + e.Message);
         }
 
-        private bool ForwardMessage(EmailMessage message, string prefix)
+        private bool ForwardMessage(EmailMessage message, string prefix, string recipient)
         {
             try
             {
@@ -242,7 +276,8 @@ namespace TicketFromEmail365
 
                 forwardMessage.BodyPrefix = prefix;
 
-                forwardMessage.ToRecipients.Add(_currentConfig.EmailForward);
+                forwardMessage.ToRecipients.Add(recipient);
+                //forwardMessage.ToRecipients.Add(_currentConfig.EmailForward);
 
                 forwardMessage.SendAndSaveCopy();
 

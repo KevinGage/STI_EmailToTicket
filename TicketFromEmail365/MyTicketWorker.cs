@@ -18,6 +18,7 @@ namespace TicketFromEmail365
         int _ticketNumber;
         int _clientID;
         int _primaryTech;
+        string[] _ticketEmailAddresses;
         
         public MyTicketWorker(EmailMessage message, MyConfig config)
         {
@@ -90,6 +91,23 @@ namespace TicketFromEmail365
                                 break;
                         }
                     }
+                    ////////////////////GET ALL RELEVANT EMAIL ADDRESSES HERE AND SET _ticketEmailAddresses ALSO ADD STI GROUP
+                    using (SqlCommand cmd1 = new SqlCommand("SELECT EmailAddresses FROM Tickets WHERE TicketNum=@ticketNum", conn))
+                    {
+                        cmd1.Parameters.AddWithValue("@ticketNumber", _ticketNumber);
+                        SqlDataReader reader = cmd1.ExecuteReader();
+
+                        if (reader.HasRows)
+                        {
+
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    ////////////////////THIS SECTION UNFINISHED!!!!!///////////////////////////////////////
+
                 }
             }
             catch (Exception ex)
@@ -160,6 +178,7 @@ namespace TicketFromEmail365
         private bool OpenTicket()
         {
             //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody as ticket issue, From address, cc addresses
+            //set _ticketEmailAddresses property
             //return true if everything worked
             return true;
         }
@@ -204,6 +223,10 @@ namespace TicketFromEmail365
         public string Error
         {
             get { return _error; }
+        }
+        public string[] TicketEmailAddresses
+        {
+            get { return _ticketEmailAddresses; }
         }
     }
 }
