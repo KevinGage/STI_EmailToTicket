@@ -162,10 +162,22 @@ namespace TicketFromEmail365
 
                                     if (ticketWorker.TicketNumber != 0 && ticketWorker.Error == null)
                                     {
-                                        //ticket exists. no error
+                                        //ticket exists in subject. no error
                                         //ticket should be updated
                                         //forward to sti
                                         //dont forward to client
+                                        if (ForwardMessage(message, "ticket notes updated"))
+                                        {
+                                            if (_currentConfig.LogLevel > 1)
+                                            {
+                                                MyLogger.writeSingleLine("Ticket Succesfully updated and email forwarded: Ticket " + ticketWorker.TicketNumber.ToString());
+                                            }
+                                        }
+                                        else
+                                        {
+                                            MyLogger.writeSingleLine("Ticket Updated but error forwarding email: Ticket " + ticketWorker.TicketNumber.ToString());
+                                            MyLogger.writeSingleLine("message id: " + message.Id.ToString());
+                                        }
                                     }
                                     else if (ticketWorker.TicketNumber == 0 && ticketWorker.Error == "")
                                     {
@@ -242,22 +254,15 @@ namespace TicketFromEmail365
             MyLogger.writeSingleLine("Error: " + e.Message);
         }
 
-        private bool ForwardMessage(EmailMessage message, string prefixToMessage, int ticketNumber)
+        private bool ForwardMessage(EmailMessage message, string prefix)
         {
-            ResponseMessage responseMessage = message.CreateForward();
+            ResponseMessage forwardMessage = message.CreateForward();
 
-            responseMessage.BodyPrefix = prefixToMessage;
+            forwardMessage.BodyPrefix = prefix;
 
-            responseMessage.ToRecipients.Add(_currentConfig.EmailForward);
+            forwardMessage.ToRecipients.Add(_currentConfig.EmailForward);
 
-            responseMessage.Subject = message.Subject;
-
-            if (!responseMessage.Subject.Contains("*** Ticket "))
-            {
-                responseMessage.Subject = responseMessage.Subject + " *** Ticket " + ticketNumber.ToString() + " ***";
-            }
-
-            responseMessage.SendAndSaveCopy();
+            forwardMessage.SendAndSaveCopy();
 
             return false;
         }
