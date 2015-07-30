@@ -50,7 +50,7 @@ namespace TicketFromEmail365
 
         private bool OpenTicket()
         {
-            //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody, openedby?
+            //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody, From address, cc addresses
             //return true if everything worked
             return false;
         }
