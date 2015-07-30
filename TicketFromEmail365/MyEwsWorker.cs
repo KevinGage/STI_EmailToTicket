@@ -141,22 +141,6 @@ namespace TicketFromEmail365
                                     PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, EmailMessageSchema.CcRecipients, EmailMessageSchema.BccRecipients, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
 
                                     message.Load(propertiesToLoad);
-                                    /*
-                                    if (_currentConfig.LogLevel > 0)
-                                    {
-                                        MyLogger.writeSingleLine("Sender: " + message.Sender.Address);
-                                    }
-                                    if (_currentConfig.LogLevel > 0)
-                                    {
-                                        MyLogger.writeSingleLine("Subject: " + message.Subject);
-                                    }
-                                    if (_currentConfig.LogLevel > 1)
-                                    {
-                                        MyLogger.writeSingleLine("Text Body: " + message.TextBody);
-                                    }
-
-                                    ForwardMessage(message, "I forwarded stuff", 123);
-                                    */
 
                                     MyTicketWorker ticketWorker = new MyTicketWorker(message, _currentConfig);
 
@@ -165,7 +149,7 @@ namespace TicketFromEmail365
                                         //ticket exists in subject. no error
                                         //ticket should be updated
                                         //forward to sti
-                                        //dont forward to client
+                                        //Also reply to the sender and any email address in the ticket databse. NOT DONE YET
                                         if (ForwardMessage(message, "ticket notes updated"))
                                         {
                                             if (_currentConfig.LogLevel > 1)
