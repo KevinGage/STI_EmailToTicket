@@ -62,18 +62,40 @@ namespace TicketFromEmail365
             //this should update the _ticketNumber ticket with _message in notes
             //Set error if something went wrong
             string connectionString = BuildConnectionString(_config);
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("UPDATE Tickets SET Notes = @notes + char(13)+char(10) + Notes WHERE TicketNum=@ticketNumber", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@notes", _message.TextBody);
+                        cmd.Parameters.AddWithValue("@ticketNumber", _ticketNumber);
 
-            SqlConnection dc = new SqlConnection(connectionString);
+                        int rows = cmd.ExecuteNonQuery();
 
-            /*
-            UPDATE tblMyTable SET MyCell = MyCell + ',' + @MyParameter
-
-            SqlParameter paramNotes = new SqlParameter();
-            paramNotes.ParameterName = "@Notes";
-            paramNotes.Value = updateTicket.Notes;
-            */
-
-            dc.Close();
+                        switch (rows)
+                        {
+                            case 0:
+                                MyLogger.writeSingleLine("No tickets updated.  Invalid ticket number? Ticket Number: " + _ticketNumber.ToString());
+                                _error = "No tickets updated.  Invalid ticket number? Ticket Number: " + _ticketNumber.ToString();
+                                break;
+                            case 1:
+                                _error = null;
+                                break;
+                            default:
+                                MyLogger.writeSingleLine("Error updating ticket.  Multiple tickets updated? Ticket Number: " + _ticketNumber.ToString());
+                                _error = "Error updating ticket.  Multiple tickets updated? Ticket Number: " + _ticketNumber.ToString();
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _error = "Error trying to update database: " + ex.ToString();
+                MyLogger.writeSingleLine("Error trying to update database: " + System.Environment.NewLine + ex.ToString());
+            }
         }
 
         public bool CheckClientDomain()
