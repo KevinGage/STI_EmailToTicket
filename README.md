@@ -27,11 +27,11 @@ A C# service created to check an office 365 inbox for messages and auto-open tic
   <OL>
     <LI>Does the email subject already have a ticket number in it?</LI>
     <OL>
-      <LI>Yes, update relevant ticket notes, forward to distribution group, reply to client, delete email</LI>
+      <LI>Yes, update relevant ticket notes, forward to distribution group, reply to all email addresses included in the ticket, delete email</LI>
       <LI>No, Is the message from a clients domain?</LI>
         <OL>
           <LI>No, Forward the email, delete the message</LI>
-          <LI>Yes, open ticket, forward email to distribution group with modified subject to include ticket, reply to client,  delete email</LI>
+          <LI>Yes, open ticket, added From and CC email addresses to ticket, forward email to distribution group with modified subject to include ticket, reply to From address,  delete email</LI>
         </OL>
       <LI>Log activity based on logging level</LI>
     </OL>
