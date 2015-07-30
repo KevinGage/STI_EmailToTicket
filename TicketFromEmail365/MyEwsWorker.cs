@@ -158,7 +158,7 @@ namespace TicketFromEmail365
                                     ForwardMessage(message, "I forwarded stuff", 123);
                                     */
 
-                                    MyTicketWorker ticketWorker = new MyTicketWorker(message);
+                                    MyTicketWorker ticketWorker = new MyTicketWorker(message, _currentConfig);
 
                                     if (ticketWorker.TicketNumber != 0 && ticketWorker.Error == null)
                                     {

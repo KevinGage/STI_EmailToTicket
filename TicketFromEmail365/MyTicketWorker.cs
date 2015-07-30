@@ -13,12 +13,13 @@ namespace TicketFromEmail365
     class MyTicketWorker
     {
         EmailMessage _message;
+        MyConfig _config;
         string _error;
         int _ticketNumber;
         int _clientID;
         int _primaryTech;
         
-        public MyTicketWorker(EmailMessage message)
+        public MyTicketWorker(EmailMessage message, MyConfig config)
         {
             _message = message;
              SubjectHasTicketNumber();
@@ -41,6 +42,7 @@ namespace TicketFromEmail365
                     {
                         string ticketNumber = _message.Subject.Substring(_message.Subject.IndexOf(matches[0].ToString())).Split(' ')[2];
                         _ticketNumber = Int32.Parse(ticketNumber);
+                        UpdateTicket();
                     }
                     catch
                     {
@@ -55,12 +57,23 @@ namespace TicketFromEmail365
             }              
         }
 
-        public bool UpdateTicket()
+        private void UpdateTicket()
         {
             //this should update the _ticketNumber ticket with _message in notes
-            //return false if error
+            //Set error if something went wrong
+            string connectionString = BuildConnectionString(_config);
 
-            return false;
+            SqlConnection dc = new SqlConnection(connectionString);
+
+            /*
+            UPDATE tblMyTable SET MyCell = MyCell + ',' + @MyParameter
+
+            SqlParameter paramNotes = new SqlParameter();
+            paramNotes.ParameterName = "@Notes";
+            paramNotes.Value = updateTicket.Notes;
+            */
+
+            dc.Close();
         }
 
         public bool CheckClientDomain()
@@ -82,14 +95,9 @@ namespace TicketFromEmail365
         public static bool TestDatabaseConnection(MyConfig currentConfig)
         {
             //This should take in a config and test the connection to the database
-            SqlConnectionStringBuilder builder = new System.Data.SqlClient.SqlConnectionStringBuilder();
-            builder["Data Source"] = currentConfig.DbServer + "," + currentConfig.DbPort;
-            builder["integrated Security"] = false;
-            builder.UserID = currentConfig.UserDb;
-            builder["Password"] = currentConfig.PasswordDb;
-            builder["Initial Catalog"] = currentConfig.DbName;
+            string connectionString = BuildConnectionString(currentConfig);
 
-            using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
@@ -102,6 +110,19 @@ namespace TicketFromEmail365
                 }
             }
 
+        }
+
+        private static string BuildConnectionString(MyConfig config)
+        {
+            //This should safely build the appropriate SQL connection string using the config file
+            SqlConnectionStringBuilder builder = new System.Data.SqlClient.SqlConnectionStringBuilder();
+            builder["Data Source"] = config.DbServer + "," + config.DbPort;
+            builder["integrated Security"] = false;
+            builder.UserID = config.UserDb;
+            builder["Password"] = config.PasswordDb;
+            builder["Initial Catalog"] = config.DbName;
+
+            return builder.ConnectionString;
         }
 
         public int TicketNumber
