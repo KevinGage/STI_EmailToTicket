@@ -21,23 +21,38 @@ namespace TicketFromEmail365
         public MyTicketWorker(EmailMessage message)
         {
             _message = message;
-            SubjectHasTicketNumber();
+             SubjectHasTicketNumber();
         }
 
         private void SubjectHasTicketNumber()
         {
             //this will fire when a new ticket worker is created.
-            //it should check _message subject for *** Ticket # ***
+            //it should check _message subject for exactly one instance of *** Ticket 
             //if ticket number found set _ticketNumber and update ticket
             //if not set ticket number to 0
-            if (Regex.Matches(_message.Subject, "\\*{3} Ticket \\d{1,} \\*{3}").Count > 0)
+            MatchCollection matches = Regex.Matches(_message.Subject, "\\*{3} Ticket \\d{1,} \\*{3}");
+            switch (matches.Count)
             {
-                //ticket exists in subject
-            }
-            else
-            {
-                _ticketNumber = 0;
-            }         
+                case 0:
+                    _ticketNumber = 0;
+                    break;
+                case 1:
+                    try
+                    {
+                        string ticketNumber = _message.Subject.Substring(_message.Subject.IndexOf(matches[0].ToString())).Split(' ')[2];
+                        _ticketNumber = Int32.Parse(ticketNumber);
+                    }
+                    catch
+                    {
+                        _ticketNumber = 0;
+                        _error = "invalid ticket number: ";
+                    }
+                    break;
+                default:
+                    _ticketNumber = 0;
+                    _error = "invalid ticket information found in subject.  Multiple tickets?";
+                    break;
+            }              
         }
 
         public bool UpdateTicket()

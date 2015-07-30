@@ -160,7 +160,7 @@ namespace TicketFromEmail365
 
                                     MyTicketWorker ticketWorker = new MyTicketWorker(message);
 
-                                    if (ticketWorker.TicketNumber != 0 && ticketWorker.Error == "")
+                                    if (ticketWorker.TicketNumber != 0 && ticketWorker.Error == null)
                                     {
                                         //ticket exists. no error
                                         //ticket should be updated
