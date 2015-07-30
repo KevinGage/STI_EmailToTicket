@@ -138,7 +138,7 @@ namespace TicketFromEmail365
                                 if (singleItem is EmailMessage)
                                 {
                                     EmailMessage message = (EmailMessage)singleItem;
-                                    PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
+                                    PropertySet propertiesToLoad = new PropertySet(EmailMessageSchema.Sender, EmailMessageSchema.CcRecipients, EmailMessageSchema.BccRecipients, ItemSchema.Subject, ItemSchema.TextBody, ItemSchema.Body);
 
                                     message.Load(propertiesToLoad);
                                     /*
