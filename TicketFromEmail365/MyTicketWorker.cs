@@ -22,6 +22,7 @@ namespace TicketFromEmail365
         public MyTicketWorker(EmailMessage message, MyConfig config)
         {
             _message = message;
+            _config = config;
              SubjectHasTicketNumber();
         }
 
@@ -69,7 +70,7 @@ namespace TicketFromEmail365
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand("UPDATE Tickets SET Notes = @notes + char(13)+char(10) + Notes WHERE TicketNum=@ticketNumber", conn))
                     {
-                        cmd.Parameters.AddWithValue("@notes", _message.TextBody);
+                        cmd.Parameters.AddWithValue("@notes", "Email from: " + _message.Sender.ToString() + System.Environment.NewLine + _message.TextBody.ToString());
                         cmd.Parameters.AddWithValue("@ticketNumber", _ticketNumber);
 
                         int rows = cmd.ExecuteNonQuery();

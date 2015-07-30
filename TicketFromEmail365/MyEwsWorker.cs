@@ -173,11 +173,6 @@ namespace TicketFromEmail365
                                                 MyLogger.writeSingleLine("Ticket Succesfully updated and email forwarded: Ticket " + ticketWorker.TicketNumber.ToString());
                                             }
                                         }
-                                        else
-                                        {
-                                            MyLogger.writeSingleLine("Ticket Updated but error forwarding email: Ticket " + ticketWorker.TicketNumber.ToString());
-                                            MyLogger.writeSingleLine("message id: " + message.Id.ToString());
-                                        }
                                     }
                                     else if (ticketWorker.TicketNumber == 0 && ticketWorker.Error == "")
                                     {
@@ -200,6 +195,7 @@ namespace TicketFromEmail365
                                     else
                                     {
                                         //error
+                                        MyLogger.writeSingleLine("Error: " + ticketWorker.Error);
                                     }
                                 }
                             }
@@ -256,15 +252,24 @@ namespace TicketFromEmail365
 
         private bool ForwardMessage(EmailMessage message, string prefix)
         {
-            ResponseMessage forwardMessage = message.CreateForward();
+            try
+            {
+                ResponseMessage forwardMessage = message.CreateForward();
 
-            forwardMessage.BodyPrefix = prefix;
+                forwardMessage.BodyPrefix = prefix;
 
-            forwardMessage.ToRecipients.Add(_currentConfig.EmailForward);
+                forwardMessage.ToRecipients.Add(_currentConfig.EmailForward);
 
-            forwardMessage.SendAndSaveCopy();
+                forwardMessage.SendAndSaveCopy();
 
-            return false;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MyLogger.writeSingleLine("Ticket Updated but error forwarding email: Error " + ex.ToString());
+                MyLogger.writeSingleLine("message id: " + message.Id.ToString());
+                return false;
+            }
         }
 
         public string Error
