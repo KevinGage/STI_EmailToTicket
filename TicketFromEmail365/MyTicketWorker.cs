@@ -131,7 +131,7 @@ namespace TicketFromEmail365
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    SqlCommand cmd = new SqlCommand("SELECT ClientEmailDomains from Clients WHERE ClientEmailDomains IS NOT NULL", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT ClientEmailDomains, ClientPrimaryTech, ClientID from Clients WHERE ClientEmailDomains IS NOT NULL", conn);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if(reader.HasRows)
@@ -143,6 +143,8 @@ namespace TicketFromEmail365
                             {
                                 if(s == senderDomain)
                                 {
+                                    _primaryTech = Int32.Parse(reader["ClientPrimaryTech"].ToString());
+                                    _clientID = Int32.Parse(reader["ClientID"].ToString());
                                     if (OpenTicket())
                                     {
                                         _error = null;
@@ -180,7 +182,102 @@ namespace TicketFromEmail365
             //this should insert a new ticket using _cliendID, _primaryTech, _message.textbody as ticket issue, From address, cc addresses
             //set _ticketEmailAddresses property
             //return true if everything worked
-            return true;
+            string connectionString = BuildConnectionString(_config);
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    //first get tech name with a select. save as variable.
+                    string techName = "";
+
+                    conn.Open();
+
+                    using (SqlCommand cmd = new SqlCommand("SELECT TechName from Techs WHERE TechID=@techID", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@techID", _primaryTech);
+
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                techName = reader["TechName"].ToString();
+                            }
+
+                        }
+                        else
+                        {
+                            _error = "No tech name found";
+                            return false;
+                        }
+                    }
+                    //then run insert.
+                    if (techName != "")
+                    {
+                        using (SqlCommand cmd = new SqlCommand("INSERT INTO Tickets VALUES(@OpenTech, @AssignTech, @Status, @ClientID, @OpenDate, @Description, @Priority, @EmailAddresses)", conn))
+                        {
+                            string emailAddresses = _message.Sender.Address;
+                            foreach (EmailAddress ea in _message.CcRecipients)
+                            {
+                                emailAddresses += "," + ea.Address;
+                            }
+                            foreach (EmailAddress ea in _message.BccRecipients)
+                            {
+                                emailAddresses += "," + ea.Address;
+                            }
+
+                            cmd.Parameters.AddWithValue("@OpenTech", "EMAIL");
+                            cmd.Parameters.AddWithValue("@AssignTech", techName);
+                            cmd.Parameters.AddWithValue("@Status", 1);
+                            cmd.Parameters.AddWithValue("@ClientID", _clientID);
+                            cmd.Parameters.AddWithValue("@ClientID", System.DateTime.Now);
+                            cmd.Parameters.AddWithValue("@Description", _message.TextBody);
+                            cmd.Parameters.AddWithValue("@Priority", 2);
+                            cmd.Parameters.AddWithValue("@EmailAddresses", emailAddresses);
+
+                            int rows = cmd.ExecuteNonQuery();
+
+                            switch (rows)
+                            {
+                                case 0:
+                                    _error = "Ticket not inserted";
+                                    if (_config.LogLevel > 0)
+                                    {
+                                        MyLogger.writeSingleLine("Error inserting ticket.  Ticket not inserted");
+                                    }
+                                    return false;
+                                case 1:
+                                    if (_config.LogLevel > 1)
+                                    {
+                                        MyLogger.writeSingleLine("Ticket added to databse");
+                                    }
+                                    _error = null;
+                                    return true;
+                                default:
+                                    _error = "Error inserting ticket.  Multiple inserts detected";
+                                    if (_config.LogLevel > 0)
+                                    {
+                                        MyLogger.writeSingleLine("Error inserting ticket.  Multiple inserts detected");
+                                    }
+                                    return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _error = "No tech name found.";
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _error = "Error connecting to the database.  Error: " + ex.ToString();
+                MyLogger.writeSingleLine("Error connecting to the database.  Error: " + ex.ToString());
+                return false;
+            }
+            
         }
 
         public static bool TestDatabaseConnection(MyConfig currentConfig)
