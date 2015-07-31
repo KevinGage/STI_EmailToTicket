@@ -59,7 +59,7 @@ namespace TicketFromEmail365
             }              
         }
 
-        private void UpdateTicket() /////////////THIS DOESNT SEEM TO BE UPDATING THE DATABASE
+        private void UpdateTicket()
         {
             //this should update the _ticketNumber ticket with _message in notes
             //Set error if something went wrong
@@ -71,7 +71,7 @@ namespace TicketFromEmail365
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand("UPDATE Tickets SET Notes = @notes + char(13)+char(10) + Notes WHERE TicketNum=@ticketNumber", conn))
                     {
-                        cmd.Parameters.AddWithValue("@notes", "Email from: " + _message.Sender.ToString() + System.Environment.NewLine + _message.TextBody.ToString());
+                        cmd.Parameters.AddWithValue("@notes", "Email from: " + _message.Sender.ToString() + " on " + System.DateTime.Now.ToShortDateString() + System.Environment.NewLine + _message.TextBody.ToString());
                         cmd.Parameters.AddWithValue("@ticketNumber", _ticketNumber);
 
                         int rows = cmd.ExecuteNonQuery();
