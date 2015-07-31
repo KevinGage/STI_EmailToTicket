@@ -156,7 +156,7 @@ namespace TicketFromEmail365
                                             {
                                                 MyLogger.writeSingleLine("Ticket Succesfully updated and email forwarded: Ticket " + ticketWorker.TicketNumber.ToString());
                                             }
-                                            message.Delete(DeleteMode.SoftDelete);
+                                            message.Delete(DeleteMode.MoveToDeletedItems);
                                         }
                                     }
                                     else if (ticketWorker.TicketNumber == 0 && ticketWorker.Error == null)
@@ -192,7 +192,7 @@ namespace TicketFromEmail365
                                                     {
                                                         MyLogger.writeSingleLine("email sent to all addresses.");
                                                     }
-                                                    message.Delete(DeleteMode.SoftDelete);
+                                                    message.Delete(DeleteMode.MoveToDeletedItems);
                                                 }
                                             }
                                         }
@@ -206,7 +206,7 @@ namespace TicketFromEmail365
                                                 {
                                                     MyLogger.writeSingleLine("email forwarded. no ticket.");
                                                 }
-                                                message.Delete(DeleteMode.SoftDelete);
+                                                message.Delete(DeleteMode.MoveToDeletedItems);
                                             }
                                         }
                                     }
