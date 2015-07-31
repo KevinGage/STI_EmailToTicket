@@ -211,11 +211,13 @@ namespace TicketFromEmail365
                             _error = "No tech name found";
                             return false;
                         }
+
+                        reader.Close();
                     }
                     //then run insert.
                     if (techName != "")
                     {
-                        using (SqlCommand cmd = new SqlCommand("INSERT INTO Tickets VALUES(@OpenTech, @AssignTech, @Status, @ClientID, @OpenDate, @Description, @Priority, @EmailAddresses)", conn))
+                        using (SqlCommand cmd = new SqlCommand("INSERT INTO Tickets (OpenTech, AssignTech, Status, ClientID, OpenDate, Description, Priority, HoursWorked, SpecialProject, EmailAddresses) output INSERTED.TicketNum VALUES(@OpenTech, @AssignTech, @Status, @ClientID, @OpenDate, @Description, @Priority, @HoursWorked, @SpecialProject, @EmailAddresses)", conn))
                         {
                             string emailAddresses = _message.Sender.Address;
                             foreach (EmailAddress ea in _message.CcRecipients)
@@ -226,41 +228,37 @@ namespace TicketFromEmail365
                             {
                                 emailAddresses += "," + ea.Address;
                             }
+                            _ticketEmailAddresses = emailAddresses.Split(',');
 
                             cmd.Parameters.AddWithValue("@OpenTech", "EMAIL");
                             cmd.Parameters.AddWithValue("@AssignTech", techName);
                             cmd.Parameters.AddWithValue("@Status", 1);
                             cmd.Parameters.AddWithValue("@ClientID", _clientID);
-                            cmd.Parameters.AddWithValue("@ClientID", System.DateTime.Now);
-                            cmd.Parameters.AddWithValue("@Description", _message.TextBody);
+                            cmd.Parameters.AddWithValue("@OpenDate", System.DateTime.Now);
+                            cmd.Parameters.AddWithValue("@Description", _message.TextBody.ToString());
                             cmd.Parameters.AddWithValue("@Priority", 2);
+                            cmd.Parameters.AddWithValue("@HoursWorked", 0);
+                            cmd.Parameters.AddWithValue("@SpecialProject", 0);
                             cmd.Parameters.AddWithValue("@EmailAddresses", emailAddresses);
 
-                            int rows = cmd.ExecuteNonQuery();
+                            var newTicketNumberObject = cmd.ExecuteScalar();
+                            int newTicketNumber = Int32.Parse(newTicketNumberObject.ToString());
+                            _ticketNumber = newTicketNumber;
 
-                            switch (rows)
+                            if (_ticketNumber > 0)
                             {
-                                case 0:
-                                    _error = "Ticket not inserted";
-                                    if (_config.LogLevel > 0)
-                                    {
-                                        MyLogger.writeSingleLine("Error inserting ticket.  Ticket not inserted");
-                                    }
-                                    return false;
-                                case 1:
-                                    if (_config.LogLevel > 1)
-                                    {
-                                        MyLogger.writeSingleLine("Ticket added to databse");
-                                    }
-                                    _error = null;
-                                    return true;
-                                default:
-                                    _error = "Error inserting ticket.  Multiple inserts detected";
-                                    if (_config.LogLevel > 0)
-                                    {
-                                        MyLogger.writeSingleLine("Error inserting ticket.  Multiple inserts detected");
-                                    }
-                                    return false;
+                                if (_config.LogLevel > 1)
+                                {
+                                    MyLogger.writeSingleLine("Ticket added to database");
+                                }
+                                _error = null;
+                                return true;
+                            }
+                            else
+                            {
+                                _error = "Invalid ticket number returned when new ticket was created";
+                                MyLogger.writeSingleLine("Invalid ticket number returned when new ticket was created");
+                                return false;
                             }
                         }
                     }

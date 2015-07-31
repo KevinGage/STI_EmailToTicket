@@ -181,7 +181,7 @@ namespace TicketFromEmail365
                                                 bool problem = false;
                                                 foreach (string s in ticketWorker.TicketEmailAddresses)
                                                 {
-                                                    if (!ForwardMessage(message, replyMessage, _currentConfig.EmailForward))
+                                                    if (!ForwardMessage(message, replyMessage, _currentConfig.EmailForward, ticketWorker.TicketNumber))
                                                     {
                                                         problem = true;
                                                     }
@@ -278,6 +278,30 @@ namespace TicketFromEmail365
 
                 forwardMessage.ToRecipients.Add(recipient);
                 //forwardMessage.ToRecipients.Add(_currentConfig.EmailForward);
+
+                forwardMessage.SendAndSaveCopy();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MyLogger.writeSingleLine("Ticket Updated but error forwarding email: Error " + ex.ToString());
+                MyLogger.writeSingleLine("message id: " + message.Id.ToString());
+                return false;
+            }
+        }
+
+        private bool ForwardMessage(EmailMessage message, string prefix, string recipient, int ticketNumer)
+        {
+            try
+            {
+                ResponseMessage forwardMessage = message.CreateForward();
+
+                forwardMessage.BodyPrefix = prefix;
+
+                forwardMessage.ToRecipients.Add(recipient);
+
+                forwardMessage.Subject = "*** Ticket " + ticketNumer.ToString() + " *** " + message.Subject;
 
                 forwardMessage.SendAndSaveCopy();
 
