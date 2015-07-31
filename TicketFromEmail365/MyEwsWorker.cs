@@ -150,12 +150,13 @@ namespace TicketFromEmail365
                                         //ticket should be updated
                                         //forward to sti
                                         //Also reply to the sender and any email address in the ticket databse. NOT DONE YET
-                                        if (ForwardMessage(message, "ticket notes updated", _currentConfig.EmailForward))
+                                        if (ForwardMessage(message, "ticket notes updated", ticketWorker))
                                         {
                                             if (_currentConfig.LogLevel > 1)
                                             {
-                                                MyLogger.writeSingleLine("Ticket Succesfully updated and email forwarded: Ticket " + ticketWorker.TicketNumber.ToString());
+                                                MyLogger.writeSingleLine("Ticket Notes Succesfully updated and email forwarded: Ticket " + ticketWorker.TicketNumber.ToString());
                                             }
+
                                             message.Delete(DeleteMode.MoveToDeletedItems);
                                         }
                                     }
@@ -172,21 +173,14 @@ namespace TicketFromEmail365
                                             if (ticketWorker.TicketNumber != 0)
                                             {
                                                 string replyMessage = "Your email was received and assigned ticket number " + 
-                                                    ticketWorker.TicketNumber.ToString() + System.Environment.NewLine + 
-                                                    "An engineer will reach out to you as soon as possible." + 
-                                                    System.Environment.NewLine + System.Environment.NewLine + 
-                                                    "Thank You," + System.Environment.NewLine + 
-                                                    "Siroonian Technologies" + System.Environment.NewLine + 
+                                                    ticketWorker.TicketNumber.ToString() + System.Environment.NewLine + "<br />" +
+                                                    "An engineer will reach out to you as soon as possible." +
+                                                    System.Environment.NewLine + System.Environment.NewLine + "<br />" + "<br />" +
+                                                    "Thank You," + System.Environment.NewLine + "<br />" +
+                                                    "Siroonian Technologies" + System.Environment.NewLine + "<br />" +
                                                     "781-350-3596";
-                                                bool problem = false;
-                                                foreach (string s in ticketWorker.TicketEmailAddresses)
-                                                {
-                                                    if (!ForwardMessage(message, replyMessage, _currentConfig.EmailForward, ticketWorker.TicketNumber))
-                                                    {
-                                                        problem = true;
-                                                    }
-                                                }
-                                                if (!problem)
+
+                                                if (ForwardMessage(message, replyMessage, ticketWorker))
                                                 {
                                                     if (_currentConfig.LogLevel > 1)
                                                     {
@@ -291,7 +285,7 @@ namespace TicketFromEmail365
             }
         }
 
-        private bool ForwardMessage(EmailMessage message, string prefix, string recipient, int ticketNumer)
+        private bool ForwardMessage(EmailMessage message, string prefix, MyTicketWorker ticket)
         {
             try
             {
@@ -299,9 +293,14 @@ namespace TicketFromEmail365
 
                 forwardMessage.BodyPrefix = prefix;
 
-                forwardMessage.ToRecipients.Add(recipient);
+                foreach (string s in ticket.TicketEmailAddresses)
+                {
+                    forwardMessage.ToRecipients.Add(s);
+                }
 
-                forwardMessage.Subject = "*** Ticket " + ticketNumer.ToString() + " *** " + message.Subject;
+                forwardMessage.ToRecipients.Add(_currentConfig.EmailForward);
+
+                forwardMessage.Subject = "*** Ticket " + ticket.TicketNumber.ToString() + " *** " + message.Subject;
 
                 forwardMessage.SendAndSaveCopy();
 

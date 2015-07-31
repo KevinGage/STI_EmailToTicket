@@ -59,7 +59,7 @@ namespace TicketFromEmail365
             }              
         }
 
-        private void UpdateTicket()
+        private void UpdateTicket() /////////////THIS DOESNT SEEM TO BE UPDATING THE DATABASE
         {
             //this should update the _ticketNumber ticket with _message in notes
             //Set error if something went wrong
@@ -91,23 +91,23 @@ namespace TicketFromEmail365
                                 break;
                         }
                     }
-                    ////////////////////GET ALL RELEVANT EMAIL ADDRESSES HERE AND SET _ticketEmailAddresses ALSO ADD STI GROUP
                     using (SqlCommand cmd1 = new SqlCommand("SELECT EmailAddresses FROM Tickets WHERE TicketNum=@ticketNum", conn))
                     {
-                        cmd1.Parameters.AddWithValue("@ticketNumber", _ticketNumber);
+                        cmd1.Parameters.AddWithValue("@ticketNum", _ticketNumber);
                         SqlDataReader reader = cmd1.ExecuteReader();
 
                         if (reader.HasRows)
                         {
-
+                            while (reader.Read())
+                            {
+                                _ticketEmailAddresses = reader["EmailAddresses"].ToString().Split(',');
+                            }
                         }
                         else
                         {
 
                         }
                     }
-                    ////////////////////THIS SECTION UNFINISHED!!!!!///////////////////////////////////////
-
                 }
             }
             catch (Exception ex)
