@@ -170,6 +170,7 @@ namespace TicketFromEmail365
                                             //open ticket
                                             //response to client
                                             //forward to sti
+                                            //another test comment
                                             if (ticketWorker.TicketNumber != 0)
                                             {
                                                 string replyMessage = "Your email was received and assigned ticket number " + 
