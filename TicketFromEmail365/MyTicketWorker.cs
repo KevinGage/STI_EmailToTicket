@@ -123,7 +123,7 @@ namespace TicketFromEmail365
             //if not exactly 1 result found return false
             //if 1 result found set _clientID and _primaryTech, OpenTicket().
             //if open ticket succeeds return true.
-            //test git
+            
             string senderDomain = _message.Sender.Address.Split('@')[1];
 
             string connectionString = BuildConnectionString(_config);
