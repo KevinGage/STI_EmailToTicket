@@ -173,13 +173,15 @@ namespace TicketFromEmail365
                                             
                                             if (ticketWorker.TicketNumber != 0)
                                             {
-                                                string replyMessage = "Your email was received and assigned ticket number " + 
-                                                    ticketWorker.TicketNumber.ToString() + System.Environment.NewLine + "<br />" +
-                                                    "An engineer will reach out to you as soon as possible." +
-                                                    System.Environment.NewLine + System.Environment.NewLine + "<br />" + "<br />" +
-                                                    "Thank You," + System.Environment.NewLine + "<br />" +
-                                                    "Siroonian Technologies" + System.Environment.NewLine + "<br />" +
-                                                    "781-350-3596";
+                                                string replyMessage = "<div style=\"margin:0px auto;text-align:center;font-size:12px;color:#A2A2A2;padding-bottom:6px\">## Please do not write below this line ##</div>" + System.Environment.NewLine +
+                                                    "<div style=\"font-size: 12px; font-weight: bold; color: #fff; font-family: Helvetica, Arial, sans-serif; width: 100%;text-align: center;background: #043767; padding:8px; margin:4px\"><br />Ticket: " + ticketWorker.TicketNumber.ToString() + "<br /></div>" + System.Environment.NewLine +
+                                                    "<br /><br />" + System.Environment.NewLine +
+                                                    "Thank You for contacting the Siroonian Technologies helpdesk." + System.Environment.NewLine +
+                                                    "Your email was received and assigned a ticket number." + System.Environment.NewLine +
+                                                    "An engineer will reach out to you as soon as possible. <br />" + System.Environment.NewLine +
+                                                    "Thank You," + System.Environment.NewLine + "<br />" + System.Environment.NewLine +
+                                                    "<br /><br />" + System.Environment.NewLine +
+                                                    "<div style=\"font-size: 12px; font-weight: bold; color: #fff; font-family: Helvetica, Arial, sans-serif; width: 100%;text-align: center;background: #043767; padding:8px; margin:4px\"><br /> This is an automated message from Siroonian Technologies <br /></div>";
 
                                                 if (ForwardMessage(message, replyMessage, ticketWorker, true))
                                                 {
