@@ -150,7 +150,7 @@ namespace TicketFromEmail365
                                         //ticket should be updated
                                         //forward to sti
                                         //Also reply to the sender and any email address in the ticket databse. NOT DONE YET
-                                        if (ForwardMessage(message, "ticket notes updated", ticketWorker))
+                                        if (ForwardMessage(message, "ticket notes updated", ticketWorker, false))
                                         {
                                             if (_currentConfig.LogLevel > 1)
                                             {
@@ -181,7 +181,7 @@ namespace TicketFromEmail365
                                                     "Siroonian Technologies" + System.Environment.NewLine + "<br />" +
                                                     "781-350-3596";
 
-                                                if (ForwardMessage(message, replyMessage, ticketWorker))
+                                                if (ForwardMessage(message, replyMessage, ticketWorker, true))
                                                 {
                                                     if (_currentConfig.LogLevel > 1)
                                                     {
@@ -286,7 +286,7 @@ namespace TicketFromEmail365
             }
         }
 
-        private bool ForwardMessage(EmailMessage message, string prefix, MyTicketWorker ticket)
+        private bool ForwardMessage(EmailMessage message, string prefix, MyTicketWorker ticket, bool prependTicketToSubject)
         {
             try
             {
@@ -301,7 +301,10 @@ namespace TicketFromEmail365
 
                 forwardMessage.ToRecipients.Add(_currentConfig.EmailForward);
 
-                forwardMessage.Subject = "*** Ticket " + ticket.TicketNumber.ToString() + " *** " + message.Subject;
+                if (prependTicketToSubject)
+                {
+                    forwardMessage.Subject = "*** Ticket " + ticket.TicketNumber.ToString() + " *** " + message.Subject;
+                }
 
                 forwardMessage.SendAndSaveCopy();
 
